@@ -19,13 +19,13 @@ export default async function Page() {
       <section className="w-full mb-20 lg:w-2/3 min-h-[calc(100svh-500px)] flex items-center gap-20">
         <Hero />
       </section>
-
+      <div className="flex items-center justify-start w-full gap-3 mb-10">
+        <Newspaper />
+        <span className="text-lg font-semibold">Recent Update</span>
+      </div>
       <section className="relative flex flex-col justify-between w-full gap-10 lg:flex-row">
         <div className="w-full">
-          <div className="flex items-center justify-start w-full gap-3 mb-10">
-            <Newspaper />
-            <span className="text-lg font-semibold">Recent Update</span>
-          </div>
+
           <RecentUpdate blogs={recentBlogs} isHome={true} />
         </div>
 
