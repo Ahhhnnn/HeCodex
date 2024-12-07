@@ -1,12 +1,12 @@
-import Projects from "@/components/Projects";
-import { client } from "@/lib/sanity";
+// import Projects from "@/components/Projects";
+// import { client } from "@/lib/sanity";
 
 import Description from "@/components/Description";
 import MotionDivWrapper from "@/components/MotionDivWrapper";
-import { getProjects } from "@/lib/project";
+// import { getProjects } from "@/lib/project";
 
 export default async function ProjectPage() {
-  const projects = await getProjects();
+  // const projects = await getProjects();
 
   return (
     <MotionDivWrapper
@@ -16,7 +16,7 @@ export default async function ProjectPage() {
       className="flex flex-col gap-10"
     >
       <Description page="Projects" />
-      <Projects projects={projects} />
+      {/* <Projects projects={projects} /> */}
     </MotionDivWrapper>
   );
 }
