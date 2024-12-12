@@ -9,6 +9,10 @@ export const navigationItems = [
     href: "/",
   },
   {
+    name: "About",
+    href: "/about",
+  },
+  {
     name: "Blog",
     href: "/blog",
   },
@@ -16,10 +20,10 @@ export const navigationItems = [
     name: "Project",
     href: "/project",
   },
-  {
-    name: "Message",
-    href: "/message",
-  },
+  // {
+  //   name: "Message",
+  //   href: "/message",
+  // },
 ];
 
 export default function Navbar({ page }) {

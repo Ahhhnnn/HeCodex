@@ -7,7 +7,7 @@ export default function Footer() {
           &copy; {new Date().getFullYear()} He He. All rights reserved.
         </p>
         {/* <div className=" opacity-90">Made with love and 🍰</div> */}
-        <div className=" opacity-90">Build by
+        {/* <div className=" opacity-90">Build by
           <a
             href="https://github.com/eurooooo/zephyrlin.me"
             className="underline ml-2"
@@ -15,7 +15,7 @@ export default function Footer() {
           >
             eurooooo/zephyrlin.me
           </a>
-        </div>
+        </div> */}
       </div>
     </div>
   );
