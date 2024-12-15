@@ -22,10 +22,20 @@ export const projects = [
     description:
       'Best Indie Dev Tools Navigator',
     link: { href: 'indiehackertool.com', label: 'Indie Hacker Tool' },
-    logo: '/images/indiehackertool.png',
+    logo: '/images/project/indiehackertool.png',
     category: ['Website'],
     techStack: ['Next.js', 'TailwindCSS', 'Shadcn/UI'],
     tags: ['Tool', 'Dev']
+  },
+  {
+    name: 'Art nav',
+    description:
+      'The Best Directory Website Template',
+    link: { href: 'https://www.art-nav.com', label: 'Art nav' },
+    logo: '/images/project/art-nav.png',
+    category: ['Website'],
+    techStack: ['Next.js', 'TailwindCSS', 'Shadcn/UI'],
+    tags: ['Tool', 'Dev', 'Art', 'Template']
   }
 ]
 

@@ -5,15 +5,12 @@ import { Container } from '@/components/layout/Container'
 import portraitImage from '@/public/images/avatar.png'
 
 // about page
-const aboutMeHeadline = "I'm HeHe, a software engineer based in ChengDu, China."
+const aboutMeHeadline = "I'm HeHe, a Software Engineer."
 const aboutParagraphs = [
-  "I love coding. I learned programming when I in college. I wrote my first program in Java when I was 18.",
-  "I have a lot of hobbies, such as travelling, photography, watching movies, music and so on.",
-  "I'm working as a software develop engineer in ChengDu, China now. And I'm building a lot of side projects in my spare time."
+  "I'm a backend development engineer with 5 years of work experience",
+  "Currently in the process of full stack advancement.",
+  "I'm working as a software develop engineer in ChengDu, China now. And I'm trying to become an Indie Hacker."
 ]
-
-
-
 
 export const metadata = {
   title: 'About',

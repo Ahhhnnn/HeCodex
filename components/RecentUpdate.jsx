@@ -20,7 +20,7 @@ export default function RecentUpdate({ blogs }) {
                 />
               </div>
 
-              <div className="absolute bottom-0 left-0 right-0 p-4 rounded-lg backdrop-blur-md ">
+              <div className="absolute bottom-0 left-0 right-0 p-4  backdrop-blur-md bg-[#1a1a1a] ">
                 <h2 className="mb-2 font-bold">{blog.title}</h2>
                 <p className="mb-4 text-sm text-muted-foreground">
                   {blog.publishedAt ?? ""} | {blog.tag}
