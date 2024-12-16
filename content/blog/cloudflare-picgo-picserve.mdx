@@ -1,0 +1,146 @@
+---
+  title: 使用Cloudflare R2 + PicGo实现免费图床
+  summary: 使用Cloudflare R2 + PicGo实现免费图床
+  image: /images/blog/picserver.png
+  author: hecodex
+  publishedAt: '2024-12-16'
+  tag: Cloudflare,PicGo,Obsidian
+---
+
+# 引言
+今年在尝试学习出海和独立开发过程中，陆陆续续学习接触了不少东西，养成了写Blog的习惯，同时希望需要将Blog在多个平台进行发布（导航站、个人站等），Blog中图片的引用问题导致我无法在多个平台进行快速、高效的发布。
+
+因此本文记录使用Cloudflare R2 + PicGo实现免费图床，同时结合Obsidian插件实现Blog记录过程中图片的快速上传+压缩优化
+
+# 参考文档
+[从零开始搭建你的免费图床系统 （Cloudflare R2 + WebP Cloud + PicGo）](https://sspai.com/post/90170)
+
+# 图床搭建
+## 平台介绍
+### Cloudflare R2
+Cloudflare R2 是 Cloudflare 提供的一种对象存储服务，它允许用户在全球范围内的分布式网络上存储和检索数据
+
+要开始使用 Cloudflare R2，你需要注册 Cloudflare 账户，需要注意的是开通 R2 服务需要绑定信用卡（国内外主流信用卡皆可），但并不会扣费，主要是为了验证用户身份使用
+
+同时Cloudflare 作为赛博菩萨，提供了非常慷慨的免费额度！足够你免费使用！
+![Pasted image 20241216232409](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216232409.webp)
+
+### PicGo
+
+PicGo 是一个用于快速上传并获取图片 URL 的工具软件，有着较为丰富的插件生态，支持多种图床服务，其 GitHub 仓库为「[GitHub - Molunerfinn/PicGo](https://sspai.com/link?target=https%3A%2F%2Fgithub.com%2FMolunerfinn%2FPicGo)」，可以下载对应平台客户端使用
+
+### 阿里云OSS
+阿里云OSS（Object Storage Service）是阿里云提供的一种海量、安全、低成本、高可靠的云存储服务。它支持多种存储类型，具有高可用性和灵活的扩展性，适用于数据湖存储、数据迁移、企业数据管理、数据处理等多种场景
+
+不提供免费额度，分为按量付费和包年包月，计费比较复杂
+新账号注册可以提供3个月、20W次、20GB的免费额度
+![Pasted image 20241216232745](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216232745.webp)
+
+### 七牛云存储
+七牛云对象存储（Kodo），是七牛云提供的高可靠、强安全、低成本、可扩展的存储服务。它支持中心和边缘存储，适用于海量数据管理的各类场景
+
+七牛云提供10G每月的免费额度，不过访问存储对象需要绑定**已备案**的域名，过于麻烦直接放弃！
+
+
+### 其它平台
+
+还有很多其它平台也可以提供存储服务，这里不展开讲解，可以自行搜索了解👇
+- 腾讯云OSS
+- Github
+- Amazon S3
+- 又拍云
+- ......
+
+## Cloudflare R2
+![Pasted image 20241216233603](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216233603.webp)
+### 创建 Bucket
+点击右上角【创建存储桶】，输入
+- 存储桶名称：自定义即可，可以和你的应用、业务、存储内容相关，便于区分
+- 位置：自动分配即可
+点击【创建】按钮后完成创建
+![Pasted image 20241216233737](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216233737.webp)
+现在你可以直接在页面操作，上传你的文件了
+![Pasted image 20241216234055](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216234055.webp)
+### 开启R2.dev 子域
+在生成的Bucket中点击【设置】进入设置页面
+![Pasted image 20241216234651](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216234651.webp)
+为了后续访问图片时需要的公网地址，我们需要打开【R2.dev 子域】，点击【允许访问】，并按照提示输入【allow】即可开启
+![Pasted image 20241216234746](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216234746.webp)
+![Pasted image 20241216234820](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216234820.webp)
+完成后会显示一个以 `r2.dev` 结尾的公网网址，即我们后续访问图片的网址
+![Pasted image 20241216234903](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216234903.webp)
+### 自定义域（可选）
+分配的网址比较长，不易于记忆，我们可以通过【自定义域】来绑定我们的专属域名，点击【连接域】按钮。如果你没有托管到CF的域名或者自己使用的话，可以不进行这一步，没有影响
+
+输入自己想绑定的域名，如 `xxx.com`，点击继续
+
+![Pasted image 20241216235141](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216235141.webp)
+连接域，并等待 DNS 解析生效即可
+![Pasted image 20241216235324|1193](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216235324.webp)
+完成后 bucket 状态处「公共 URL 访问」显示“已允许”，且「域」显示为我们刚自定义的域名即配置成功！
+![Pasted image 20241216235407](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216235407.webp)
+
+### 生成API令牌
+为了能够快捷的上传文件，R2提供了S3（Amazon） 兼容的 API，可以方便地使用一些客户端/命令行工具进行上传、删除等操作
+
+回到 R2 主页面，点击右上角「管理 R2 API 令牌」，进入后点击「创建 API 令牌」
+![Pasted image 20241216235552](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216235552.webp)
+
+输入自定义令牌名称（最好与你的应用、产品、操作相关），「权限」选择“对象读和写”并将此 API 指定之前所创建的 Bucket，这样最小化权限也保障数据安全，其余选项保持默认即可，点击【创建API令牌】
+![Pasted image 20241216235835](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216235835.webp)
+
+完成创建后会显示所有密钥，我们使用 PicGo 需要的下面三个信息
+- 访问密钥 ID
+- 机密访问密钥
+- 为 S3 客户端使用管辖权地特定的终结点
+
+不过因为只会显示一次，建议在密码管理软件或其他地方妥善保管好这些参数信息
+![image.png](https://r2.hecodex.me/obsidian/20241217000003858.png)
+
+
+至此，我们需要在 Cloudflare R2 上配置的部分就完成了，接下来我们需要配置 PicGo 客户端
+
+## PicGo
+![image.png](https://r2.hecodex.me/obsidian/20241217000229953.png)
+
+### 插件安装
+PicGo 本体并不包括 CloudFlare S2作为图床，但可以通过「[GitHub - wayjam/picgo-plugin-s3](https://sspai.com/link?target=https%3A%2F%2Fgithub.com%2Fwayjam%2Fpicgo-plugin-s3)」安装S3插件来支持，因为CF S2兼容了S3 API
+
+PicGo 客户端插件设置中搜索【S3】，点击安装插件即可（如果搜索不到插件，请尝试升级下PicGo版本，有版本存在Bug无法兼容npm返回的数据格式，导致无法搜索）
+![image.png](https://r2.hecodex.me/obsidian/20241217000600927.png)
+
+### 图床配置
+在图床设置中，选择【Amazone S3】可以修改默认配置或者新建配置
+
+![image.png](https://r2.hecodex.me/obsidian/20241217000725029.png)
+输入如下的必填项：
+- **应用密钥 ID**，填写 R2 API 中的 Access Key ID（访问密钥 ID）
+- **应用密钥**，填写 R2 API 中的 Secret Access Key（机密访问密钥）
+- **桶名**，填写 R2 中创建的 Bucket 名称，如我上文的 `yu-r2-test`
+- **文件路径**，上传到 R2 中的文件路径，我选择使用 `{fileName}.{extName}` 来保留原文件的文件名和扩展名，也可以自定义文件夹前缀，用于区分，比如`obsidian/{fileName}.{extName}`
+- **自定义节点**，填写 R2 API 中的「为 S3 客户端使用管辖权地特定的终结点」，即 `xxx.r2.cloudflarestorage.com` 格式的 S3 Endpoint
+配置项可以参考文档：[picgo-plugin-s3](https://github.com/wayjam/picgo-plugin-s3)
+
+![image.png](https://r2.hecodex.me/obsidian/20241217000821284.png)
+
+### 图片上传
+完成上述配置后，我们就可以在「上传区」直接拖入文件进行图片上传了，如上传后显示无误则为配置成功，生成的链接会自动在系统剪贴板中，直接在需要的地方粘贴即可，注意生出的链接格式可以自行选择👇，支持Markdown、Html、URL等，我最常用的就是Markdown格式，方便书写Blog
+
+![image.png](https://r2.hecodex.me/obsidian/20241217001112001.png)
+
+## Obsidian 自动上传
+如果你平时使用Obsidian记录，结合Obsidian的`Image auto upload`插件可以自动调用PicGo客户端实现图片的自动上传
+![image.png](https://r2.hecodex.me/obsidian/20241217001651085.png)
+
+
+## 图片压缩优化
+### PicGo插件
+如果你的图片比较多、文件比较大，担心免费额度被快速占满，可以安装PicGo 图片压缩插件对图片进行压缩，节约存储空间
+
+![image.png](https://r2.hecodex.me/obsidian/20241217001256519.png)
+
+
+### Obsidian插件
+如果你是结合了Obsidian使用，可以安装Obsidian插件压缩图片，支持`WEBP`格式，压缩率更高，更加节约空间
+
+![image.png](https://r2.hecodex.me/obsidian/20241217001505714.png)
