@@ -72,13 +72,17 @@ PicGo 是一个用于快速上传并获取图片 URL 的工具软件，有着较
 ### 自定义域（可选）
 分配的网址比较长，不易于记忆，我们可以通过【自定义域】来绑定我们的专属域名，点击【连接域】按钮。如果你没有托管到CF的域名或者自己使用的话，可以不进行这一步，没有影响
 
-输入自己想绑定的域名，如 `xxx.com`，点击继续
+输入自己想绑定的域名，如 `hecodex.me`，点击继续
 
 ![Pasted image 20241216235141](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216235141.webp)
 连接域，并等待 DNS 解析生效即可
 ![Pasted image 20241216235324|1193](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216235324.webp)
 完成后 bucket 状态处「公共 URL 访问」显示“已允许”，且「域」显示为我们刚自定义的域名即配置成功！
 ![Pasted image 20241216235407](https://r2.hecodex.me/obsidian/Pasted%20image%2020241216235407.webp)
+
+####  特别注意
+⚠️**注意**：确认你输入的自定义域名**是否已经绑定DNS记录**，如果已经绑定了，那么会造成冲突，导致原始设置不生效，从而导致你的网站不可访问！！！
+你可以选择创建一个二级域名用于R2的自定义域，比如`r2.hecodexme`
 
 ### 生成API令牌
 为了能够快捷的上传文件，R2提供了S3（Amazon） 兼容的 API，可以方便地使用一些客户端/命令行工具进行上传、删除等操作
@@ -127,6 +131,26 @@ PicGo 客户端插件设置中搜索【S3】，点击安装插件即可（如果
 完成上述配置后，我们就可以在「上传区」直接拖入文件进行图片上传了，如上传后显示无误则为配置成功，生成的链接会自动在系统剪贴板中，直接在需要的地方粘贴即可，注意生出的链接格式可以自行选择👇，支持Markdown、Html、URL等，我最常用的就是Markdown格式，方便书写Blog
 
 ![image.png](https://r2.hecodex.me/obsidian/20241217001112001.png)
+
+#### 个人问题记录
+我在PicGo上传成功后，返回的地址如下
+`![](https://hecodex.fee99a40a2a9fa94b80ce00faa62776d.r2.cloudflarestorage.com/Obsidian/ShotEasy%20%2810%29.png)`
+不过这个地址我输入到浏览器后并不能直接访问，提示如下：
+```
+<Error>
+
+<Code>InvalidArgument</Code>
+
+<Message>Authorization</Message>
+
+</Error>
+```
+使用R2.dev子域生出的URL拼接后可以正常访问
+`R2.dev 子域/Obsidian/ShotEasy%20%2810%29.png`
+
+**问题解决**
+我是通过在PicGo 设置中修改`自定义输出 URL 模板`设置了返回的链接格式:`自定义域名/{path}`解决的，设置后返回的默认链接为：`自定义域名/Obsidian/ShotEasy%20%2810%29.png`
+
 
 ## Obsidian 自动上传
 如果你平时使用Obsidian记录，结合Obsidian的`Image auto upload`插件可以自动调用PicGo客户端实现图片的自动上传
